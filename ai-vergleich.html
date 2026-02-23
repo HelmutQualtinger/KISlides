@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KI-Vergleich: Gemini vs Claude vs ChatGPT – Februar 2026</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gemini:  #4285F4;
+      --claude:  #D97559;
+      --chatgpt: #10A37F;
+      --bg:      #0F1117;
+      --surface: #1A1D27;
+      --border:  #2A2D3A;
+      --text:    #E8EAF0;
+      --muted:   #8B8FA8;
+      --accent:  #6C63FF;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    /* ── DECK ── */
+    .deck {
+      width: 100%;
+      height: 100vh;
+      position: relative;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 64px;
+      opacity: 0;
+      transform: translateX(60px);
+      transition: opacity .45s ease, transform .45s ease;
+      pointer-events: none;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: translateX(0);
+      pointer-events: all;
+    }
+    .slide.prev {
+      opacity: 0;
+      transform: translateX(-60px);
+    }
+
+    /* ── TYPOGRAPHY ── */
+    h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 700; text-align: center; line-height: 1.15; }
+    h2 { font-size: clamp(1.4rem, 3vw, 2rem); font-weight: 600; margin-bottom: 32px; text-align: center; }
+    h3 { font-size: 1rem; font-weight: 600; margin-bottom: 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); }
+    p  { font-size: clamp(.9rem, 1.5vw, 1.05rem); color: var(--muted); text-align: center; max-width: 700px; line-height: 1.7; }
+
+    .subtitle { font-size: clamp(1rem, 2vw, 1.3rem); color: var(--muted); margin-top: 12px; }
+    .date     { font-size: .85rem; color: #555; margin-top: 24px; }
+
+    /* ── BADGES ── */
+    .badges { display: flex; gap: 16px; margin-top: 24px; flex-wrap: wrap; justify-content: center; }
+    .badge {
+      padding: 8px 20px; border-radius: 24px; font-size: .85rem; font-weight: 600;
+      border: 2px solid;
+    }
+    .badge.g { color: var(--gemini);  border-color: var(--gemini); }
+    .badge.c { color: var(--claude);  border-color: var(--claude); }
+    .badge.o { color: var(--chatgpt); border-color: var(--chatgpt); }
+
+    /* ── CARDS GRID ── */
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1100px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 20px;
+    }
+    .card.g { border-top: 3px solid var(--gemini); }
+    .card.c { border-top: 3px solid var(--claude); }
+    .card.o { border-top: 3px solid var(--chatgpt); }
+
+    .card-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+    .card.g .card-title { color: var(--gemini); }
+    .card.c .card-title { color: var(--claude); }
+    .card.o .card-title { color: var(--chatgpt); }
+
+    .card ul { list-style: none; }
+    .card ul li {
+      font-size: .88rem;
+      color: var(--muted);
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .card ul li:last-child { border-bottom: none; }
+    .card ul li::before { content: '›'; opacity: .5; flex-shrink: 0; }
+
+    /* ── SCORE TABLE ── */
+    .score-table {
+      width: 100%;
+      max-width: 900px;
+      border-collapse: collapse;
+    }
+    .score-table th,
+    .score-table td {
+      padding: 12px 18px;
+      text-align: center;
+      border: 1px solid var(--border);
+      font-size: .92rem;
+    }
+    .score-table th {
+      background: var(--surface);
+      font-weight: 600;
+      font-size: .8rem;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--muted);
+    }
+    .score-table tr:nth-child(even) td { background: rgba(255,255,255,.02); }
+    .score-table td:first-child { text-align: left; color: var(--text); }
+    .score-table td.g { color: var(--gemini);  font-weight: 600; }
+    .score-table td.c { color: var(--claude);  font-weight: 600; }
+    .score-table td.o { color: var(--chatgpt); font-weight: 600; }
+
+    /* ── BAR CHART ── */
+    .bars { width: 100%; max-width: 820px; display: flex; flex-direction: column; gap: 20px; }
+    .bar-row { display: flex; flex-direction: column; gap: 6px; }
+    .bar-label { font-size: .82rem; color: var(--muted); display: flex; justify-content: space-between; }
+    .bar-track { background: var(--border); border-radius: 8px; height: 10px; overflow: hidden; }
+    .bar-fill { height: 100%; border-radius: 8px; transition: width 1s ease; }
+    .bar-fill.g { background: var(--gemini); }
+    .bar-fill.c { background: var(--claude); }
+    .bar-fill.o { background: var(--chatgpt); }
+
+    /* ── PRICE TABLE ── */
+    .price-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1000px;
+    }
+    .price-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 24px;
+      text-align: center;
+    }
+    .price-card.g { border-top: 3px solid var(--gemini); }
+    .price-card.c { border-top: 3px solid var(--claude); }
+    .price-card.o { border-top: 3px solid var(--chatgpt); }
+    .price-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .price-card.g .price-name { color: var(--gemini); }
+    .price-card.c .price-name { color: var(--claude); }
+    .price-card.o .price-name { color: var(--chatgpt); }
+    .price-free { font-size: .8rem; color: #4ade80; font-weight: 600; background: rgba(74,222,128,.1); padding: 2px 10px; border-radius: 12px; display: inline-block; margin-bottom: 16px; }
+    .price-amount { font-size: 2rem; font-weight: 700; margin-bottom: 4px; }
+    .price-period { font-size: .8rem; color: var(--muted); margin-bottom: 20px; }
+    .price-list { list-style: none; text-align: left; }
+    .price-list li { font-size: .82rem; color: var(--muted); padding: 5px 0; border-bottom: 1px solid var(--border); display: flex; gap: 8px; align-items: flex-start; }
+    .price-list li:last-child { border-bottom: none; }
+    .price-list li::before { content: '✓'; color: #4ade80; flex-shrink: 0; }
+    .price-api { margin-top: 14px; font-size: .78rem; color: #666; border-top: 1px solid var(--border); padding-top: 12px; text-align: left; }
+    .price-api strong { color: var(--muted); display: block; margin-bottom: 4px; }
+
+    /* ── WINNER CARD ── */
+    .winner-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      width: 100%;
+      max-width: 1050px;
+    }
+    .winner-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px 20px;
+      text-align: center;
+    }
+    .winner-card .icon { font-size: 2.4rem; margin-bottom: 12px; }
+    .winner-card .wname { font-size: 1rem; font-weight: 700; margin-bottom: 8px; }
+    .winner-card .wdesc { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+    .winner-card.g { border-top: 3px solid var(--gemini); }
+    .winner-card.c { border-top: 3px solid var(--claude); }
+    .winner-card.o { border-top: 3px solid var(--chatgpt); }
+
+    /* ── HERO BG ── */
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(108,99,255,.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── PROGRESS ── */
+    #progress-bar {
+      position: fixed;
+      top: 0; left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), #a78bfa);
+      transition: width .4s ease;
+      z-index: 100;
+    }
+
+    /* ── NAV ── */
+    #nav {
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: rgba(26,29,39,.85);
+      border: 1px solid var(--border);
+      border-radius: 40px;
+      padding: 10px 24px;
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+    #nav button {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 1.1rem;
+      padding: 4px 10px;
+      border-radius: 8px;
+      transition: background .2s;
+    }
+    #nav button:hover { background: rgba(255,255,255,.08); }
+    #nav button:disabled { color: var(--border); cursor: not-allowed; }
+    #slide-counter { font-size: .85rem; color: var(--muted); min-width: 60px; text-align: center; }
+
+    /* ── SLIDE NUMBER DOTS ── */
+    #dots {
+      position: fixed;
+      right: 24px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: background .3s, transform .3s;
+    }
+    .dot.active { background: var(--accent); transform: scale(1.6); }
+
+    /* ── HIGHLIGHT BOX ── */
+    .highlight {
+      background: rgba(108,99,255,.12);
+      border: 1px solid rgba(108,99,255,.3);
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-top: 20px;
+      font-size: .92rem;
+      color: #c4b5fd;
+      max-width: 750px;
+      text-align: center;
+    }
+
+    /* ── 2-COL LAYOUT ── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      width: 100%;
+      max-width: 1000px;
+      align-items: start;
+    }
+
+    /* ── TAG ── */
+    .tag {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: .72rem;
+      font-weight: 600;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+    .tag.best { background: rgba(74,222,128,.15); color: #4ade80; }
+    .tag.good { background: rgba(250,204,21,.1); color: #fbbf24; }
+    .tag.ok   { background: rgba(239,68,68,.1); color: #f87171; }
+  </style>
+</head>
+<body>
+
+<div id="progress-bar"></div>
+
+<div class="deck" id="deck">
+
+  <!-- ─────────────────────────────── SLIDE 1 – TITLE ─── -->
+  <div class="slide active" id="s0">
+    <div class="hero-bg"></div>
+    <h1>Gemini · Claude · ChatGPT</h1>
+    <p class="subtitle">Der große KI-Vergleich 2026</p>
+    <p style="margin-top:16px;">Coding &nbsp;·&nbsp; Produktivität &nbsp;·&nbsp; Preise</p>
+    <div class="badges" style="margin-top:32px;">
+      <span class="badge g">Google Gemini</span>
+      <span class="badge c">Anthropic Claude</span>
+      <span class="badge o">OpenAI ChatGPT</span>
+    </div>
+    <span class="date">Stand: Februar 2026</span>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 2 – ÜBERBLICK ─── -->
+  <div class="slide" id="s1">
+    <h2>Die drei großen KI-Assistenten</h2>
+    <div class="cards">
+      <div class="card g">
+        <div class="card-title">Google Gemini</div>
+        <ul>
+          <li>Flaggschiff: Gemini 3.1 Pro Preview</li>
+          <li>Tief in Google Workspace integriert</li>
+          <li>Native Multimodalität + Veo 3.1 Video</li>
+          <li>1 Mio. Token Kontextfenster</li>
+          <li>Gratis-Tier mit Gemini 2.5 Flash</li>
+        </ul>
+      </div>
+      <div class="card c">
+        <div class="card-title">Anthropic Claude</div>
+        <ul>
+          <li>Flaggschiff: Claude Opus 4.6 (5. Feb. 2026)</li>
+          <li>Fokus auf Sicherheit &amp; Präzision</li>
+          <li>Extended Thinking Mode</li>
+          <li>200K+ Token Kontextfenster</li>
+          <li>Gratis-Tier mit Claude Sonnet 4.6</li>
+        </ul>
+      </div>
+      <div class="card o">
+        <div class="card-title">OpenAI ChatGPT</div>
+        <ul>
+          <li>Flaggschiff: GPT-5.2 (11. Dez. 2025)</li>
+          <li>Breitestes Plugin-Ökosystem</li>
+          <li>DALL·E, Sora, Code Interpreter</li>
+          <li>128K+ Token Kontextfenster</li>
+          <li>Gratis-Tier mit GPT-5.2 Instant</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 3 – CODING OVERVIEW ─── -->
+  <div class="slide" id="s2">
+    <h2>Coding: Stärken auf einen Blick</h2>
+    <div class="cards">
+      <div class="card g">
+        <div class="card-title">Gemini 3.1 Pro</div>
+        <ul>
+          <li>Exzellent bei Google-Stack (GCP, Firebase)</li>
+          <li>AIME 2025: 86.7 % (Gemini 2.5 Pro)</li>
+          <li>1M-Token-Kontext für große Repos</li>
+          <li>NotebookLM für Code-Analyse</li>
+          <li>Vibe Coding &amp; Agentic Workflows</li>
+        </ul>
+      </div>
+      <div class="card c">
+        <div class="card-title">Claude Opus 4.6</div>
+        <ul>
+          <li>SWE-Bench Verified: 80.8 %</li>
+          <li>GUI-Automation (OSWorld): 72.7 %</li>
+          <li>BrowseComp Web Research: 84.0 %</li>
+          <li>Sehr wenig Halluzinationen</li>
+          <li>Sonnet 4.6 fast gleich stark, 5× günstiger</li>
+        </ul>
+      </div>
+      <div class="card o">
+        <div class="card-title">GPT-5.2</div>
+        <ul>
+          <li>AIME 2025: 100 % (Thinking-Modus)</li>
+          <li>SWE-Bench Verified: 80 %</li>
+          <li>Erster Kandidat &gt;90 % ARC-AGI-1</li>
+          <li>Code Interpreter mit Python &amp; Daten</li>
+          <li>3 Varianten: Instant / Thinking / Pro</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 4 – CODING BENCHMARKS ─── -->
+  <div class="slide" id="s4">
+    <h2>Coding-Benchmarks (Februar 2026)</h2>
+    <table class="score-table">
+      <thead>
+        <tr>
+          <th>Benchmark</th>
+          <th style="color:var(--gemini)">Gemini 2.5 Pro</th>
+          <th style="color:var(--claude)">Claude Opus 4.6</th>
+          <th style="color:var(--chatgpt)">GPT-5.2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>SWE-Bench Verified</td><td class="g">~60 %</td><td class="c">80.8 %<span class="tag best">Best</span></td><td class="o">80 %</td></tr>
+        <tr><td>AIME 2025 (Mathematik)</td><td class="g">86.7 %</td><td class="c">–</td><td class="o">100 %<span class="tag best">Best</span></td></tr>
+        <tr><td>ARC-AGI-1</td><td class="g">~75 %</td><td class="c">–</td><td class="o">&gt;90 %<span class="tag best">Best</span></td></tr>
+        <tr><td>Terminal-Bench 2.0</td><td class="g">–</td><td class="c">65.4 %<span class="tag best">Best</span></td><td class="o">64.0 % (Codex)</td></tr>
+        <tr><td>GUI Automation (OSWorld)</td><td class="g">–</td><td class="c">72.7 %<span class="tag best">Best</span></td><td class="o">–</td></tr>
+        <tr><td>GPQA Diamond</td><td class="g">–</td><td class="c">–</td><td class="o">93.2 %<span class="tag best">Best</span></td></tr>
+      </tbody>
+    </table>
+    <div class="highlight">Claude Opus 4.6 &amp; GPT-5.2 teilen sich Platz 1 bei SWE-Bench (80.8 % vs 80 %). GPT-5.2 ist unschlagbar in Mathematik (100 % AIME).</div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 5 – CODING DETAIL ─── -->
+  <div class="slide" id="s5">
+    <h2>Coding: Detail-Vergleich</h2>
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-label"><span>Code-Qualität &amp; Korrektheit</span></div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span>
+          <div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:80%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">80%</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span>
+          <div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:93%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">93%</span>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <span style="width:60px;font-size:.75rem;color:var(--chatgpt)">ChatGPT</span>
+          <div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:87%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">87%</span>
+        </div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Kontextuelles Refactoring</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:72%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">72%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:91%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">91%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">ChatGPT</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:82%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">82%</span></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Geschwindigkeit (Token/s)</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:88%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">88%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:70%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">70%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">ChatGPT</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:85%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">85%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 6 – IDE INTEGRATION ─── -->
+  <div class="slide" id="s6">
+    <h2>IDE &amp; Developer-Tools Integration</h2>
+    <table class="score-table">
+      <thead>
+        <tr><th>Feature</th><th style="color:var(--gemini)">Gemini</th><th style="color:var(--claude)">Claude</th><th style="color:var(--chatgpt)">ChatGPT</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>VS Code Extension</td><td class="g">✓ Gemini Code Assist</td><td class="c">✓ Claude Code / Cursor</td><td class="o">✓ GitHub Copilot</td></tr>
+        <tr><td>Eigenes CLI</td><td class="g">✓ Gemini CLI</td><td class="c">✓ Claude Code (offiziell)</td><td class="o">✓ OpenAI CLI</td></tr>
+        <tr><td>Eigene Codeausführung</td><td class="g">✓ Cloud Shell</td><td class="c">✓ Claude Code (Agents)</td><td class="o">✓ Code Interpreter</td></tr>
+        <tr><td>Kontextfenster (Max.)</td><td class="g">1 Mio. Tokens</td><td class="c">200K+ Tokens</td><td class="o">128K+ Tokens</td></tr>
+        <tr><td>Git / Repo-Integration</td><td class="g">Begrenzt</td><td class="c">✓ Nativ (Claude Code)</td><td class="o">✓ Via GitHub Copilot</td></tr>
+        <tr><td>Agentic Coding</td><td class="g">✓ Vibe Coding</td><td class="c">✓ Claude Code Agents</td><td class="o">✓ Codex (SWE-Bench Pro 56 %)</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 7 – PRODUKTIVITÄT OVERVIEW ─── -->
+  <div class="slide" id="s7">
+    <h2>Produktivitäts-Workflows: Überblick</h2>
+    <div class="cards">
+      <div class="card g">
+        <div class="card-title">Gemini 3.1 Pro</div>
+        <ul>
+          <li>Google Docs / Sheets / Gmail nativ</li>
+          <li>Google Meet Live-Notizen</li>
+          <li>Deep Research mit Live-Websuche</li>
+          <li>NotebookLM Plus für Dokument-Analyse</li>
+          <li>Veo 3.1 Videogenerierung (Ultra)</li>
+        </ul>
+      </div>
+      <div class="card c">
+        <div class="card-title">Claude Opus 4.6</div>
+        <ul>
+          <li>BrowseComp Web Research: 84.0 %</li>
+          <li>Präzise Texte &amp; Berichte (BigLaw: 90.2 %)</li>
+          <li>Komplexe Analysen mit Extended Thinking</li>
+          <li>Artefakte (HTML, SVG, Markdown)</li>
+          <li>Rechenbiologie &amp; Life-Sciences-Stärke</li>
+        </ul>
+      </div>
+      <div class="card o">
+        <div class="card-title">GPT-5.2</div>
+        <ul>
+          <li>Breites Plugin- &amp; GPT-Ökosystem</li>
+          <li>DALL·E 3 Bildgenerierung</li>
+          <li>Advanced Data Analysis (Python lokal)</li>
+          <li>Benutzerdefinierte GPTs erstellen</li>
+          <li>Advanced Voice Mode</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 8 – WORKFLOW USE CASES ─── -->
+  <div class="slide" id="s8">
+    <h2>Empfehlung nach Use Case</h2>
+    <table class="score-table">
+      <thead>
+        <tr><th>Aufgabe</th><th style="color:var(--gemini)">Gemini</th><th style="color:var(--claude)">Claude</th><th style="color:var(--chatgpt)">ChatGPT</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>E-Mail schreiben</td><td class="g">★★★<span class="tag best">Best</span></td><td class="c">★★★</td><td class="o">★★☆</td></tr>
+        <tr><td>Lange Berichte analysieren</td><td class="g">★★☆</td><td class="c">★★★<span class="tag best">Best</span></td><td class="o">★★☆</td></tr>
+        <tr><td>Präsentationen erstellen</td><td class="g">★★★<span class="tag best">Best</span></td><td class="c">★★☆</td><td class="o">★★★</td></tr>
+        <tr><td>Datenanalyse &amp; Charts</td><td class="g">★★☆</td><td class="c">★★☆</td><td class="o">★★★<span class="tag best">Best</span></td></tr>
+        <tr><td>Kreatives Schreiben</td><td class="g">★★☆</td><td class="c">★★★<span class="tag best">Best</span></td><td class="o">★★★</td></tr>
+        <tr><td>Webrecherche</td><td class="g">★★★<span class="tag best">Best</span></td><td class="c">★☆☆</td><td class="o">★★☆</td></tr>
+        <tr><td>Bilder generieren</td><td class="g">★★★</td><td class="c">–</td><td class="o">★★★<span class="tag best">Best</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 9 – REASONING & ACCURACY ─── -->
+  <div class="slide" id="s9">
+    <h2>Reasoning &amp; Fakten-Genauigkeit (2026)</h2>
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-label"><span>MMLU Lite (Allgemeinwissen) – Gemini 2.5 Pro: 89.8 %</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:90%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">89.8%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:87%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">~87%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">GPT-5.2</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:91%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">~91%</span></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>AIME 2025 (Mathematik) – GPT-5.2 Thinking: 100 %</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:87%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">86.7%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:89%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">89% (Sonnet)</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">GPT-5.2</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:100%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">100%</span></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Humanity's Last Exam (mit Tools) – Claude Opus 4.6: 53.1 %</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:19%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">18.8%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:53%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">53.1%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">GPT-5.2</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:45%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">~45%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 10 – PREISE FREE ─── -->
+  <div class="slide" id="s10">
+    <h2>Gratis-Tiere im Vergleich</h2>
+    <div class="cards">
+      <div class="card g">
+        <div class="card-title">Gemini Free (Google AI Plus)</div>
+        <ul>
+          <li>Gemini 2.5 Flash unbegrenzt</li>
+          <li>Gemini 3 Pro limitiert (AI Studio)</li>
+          <li>Google Workspace Lite-Features</li>
+          <li>Bildgenerierung (Imagen 3)</li>
+          <li>Websuche &amp; Live Grounding inklusive</li>
+        </ul>
+      </div>
+      <div class="card c">
+        <div class="card-title">Claude Free</div>
+        <ul>
+          <li>Claude Sonnet 4.6 (limitiert)</li>
+          <li>Tägliches Nachrichten-Limit</li>
+          <li>Artifacts-Feature verfügbar</li>
+          <li>Kein Extended Thinking</li>
+          <li>Kein API-Zugang</li>
+        </ul>
+      </div>
+      <div class="card o">
+        <div class="card-title">ChatGPT Free</div>
+        <ul>
+          <li>GPT-5.2 Instant (limitiert)</li>
+          <li>DALL·E limitiert</li>
+          <li>Kein Thinking-Modus</li>
+          <li>Kein erweiterter Datenanalyse</li>
+          <li>Keine Custom GPTs erstellen</li>
+        </ul>
+      </div>
+    </div>
+    <div class="highlight">Gemini bietet das stärkste Gratis-Tier dank nahtloser Google-Integration und unbegrenztem Flash-Zugang. Claude Sonnet 4.6 ist jetzt kostenlos verfügbar.</div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 11 – PREISE PAID ─── -->
+  <div class="slide" id="s11">
+    <h2>Abo-Preise (Pro / Plus)</h2>
+    <div class="price-grid">
+      <div class="price-card g">
+        <div class="price-name">Google AI Pro</div>
+        <div class="price-free">Inkl. Google One AI Premium</div>
+        <div class="price-amount">$19.99</div>
+        <div class="price-period">/ Monat (oder €21.99)</div>
+        <ul class="price-list">
+          <li>Gemini 2.5 Pro (priorisiert)</li>
+          <li>2 TB Google Drive</li>
+          <li>Gmail &amp; Docs Deep Integration</li>
+          <li>NotebookLM Plus</li>
+          <li>Veo 3.1 Video (limitiert)</li>
+        </ul>
+        <div class="price-api"><strong>API-Preise</strong>Gemini 2.5 Pro: $1.25 / 1M Input · $15 Output<br>Gemini 2.5 Flash: $0.075 / 1M Input · $0.60 Output<br>Gemini 3 Pro Preview: $2 / 1M Input · $12 Output</div>
+      </div>
+      <div class="price-card c">
+        <div class="price-name">Claude Pro</div>
+        <div class="price-free">Solo-Plan</div>
+        <div class="price-amount">$20</div>
+        <div class="price-period">/ Monat ($17 bei Jahresabo)</div>
+        <ul class="price-list">
+          <li>Claude Sonnet 4.6 (priorisiert)</li>
+          <li>Extended Thinking Mode</li>
+          <li>5× mehr Nachrichten als Free</li>
+          <li>Früher Zugang zu neuen Features</li>
+          <li>Claude.ai Projects</li>
+        </ul>
+        <div class="price-api"><strong>API-Preise</strong>Claude Opus 4.6: $5 / 1M Input · $25 Output<br>Claude Sonnet 4.6: $3 / 1M Input · $15 Output<br>Batch API: 50 % Rabatt</div>
+      </div>
+      <div class="price-card o">
+        <div class="price-name">ChatGPT Plus</div>
+        <div class="price-free">Plus-Plan</div>
+        <div class="price-amount">$20</div>
+        <div class="price-period">/ Monat</div>
+        <ul class="price-list">
+          <li>GPT-5.2 Thinking Mode</li>
+          <li>DALL·E 3 Bildgenerierung</li>
+          <li>Advanced Data Analysis</li>
+          <li>Custom GPTs erstellen</li>
+          <li>Advanced Voice Mode</li>
+        </ul>
+        <div class="price-api"><strong>API-Preise</strong>GPT-5.2: $1.75 / 1M Input · $14 Output<br>GPT-5.2 cached: ~$0.175 / 1M Input (90 % off)<br>GPT-5 (fast): $0.25 / 1M Input · $2 Output</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 12 – ENTERPRISE PREISE ─── -->
+  <div class="slide" id="s12">
+    <h2>Enterprise &amp; Team-Pläne</h2>
+    <table class="score-table">
+      <thead>
+        <tr><th>Plan</th><th style="color:var(--gemini)">Gemini</th><th style="color:var(--claude)">Claude</th><th style="color:var(--chatgpt)">ChatGPT</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Pro / Plus (Einzelperson)</td><td class="g">$19.99/Mo (AI Pro)</td><td class="c">$20/Mo (Pro)</td><td class="o">$20/Mo (Plus)</td></tr>
+        <tr><td>Ultra / Max / Pro (Highend)</td><td class="g">$249.99/Mo (AI Ultra)</td><td class="c">$100–200/Mo (Max)</td><td class="o">$200/Mo (Pro)</td></tr>
+        <tr><td>Team-Plan</td><td class="g">$28/User/Mo (Workspace)</td><td class="c">$25/User/Mo (Team)</td><td class="o">$25/User/Mo (Team)</td></tr>
+        <tr><td>Enterprise</td><td class="g">Auf Anfrage</td><td class="c">Auf Anfrage</td><td class="o">$60+/User/Mo</td></tr>
+        <tr><td>SSO / SAML &amp; DSGVO</td><td class="g">✓ EU-Server opt.</td><td class="c">✓</td><td class="o">✓</td></tr>
+        <tr><td>On-Premise / Cloud</td><td class="g">Google Cloud only</td><td class="c">AWS Bedrock / GCP</td><td class="o">Azure OpenAI</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight">Alle drei bieten ähnliche Enterprise-Features. Gemini AI Ultra ist mit $249.99/Mo das teuerste, bietet dafür aber Veo 3.1 Video. Claude &amp; ChatGPT Pro/Max liegen bei $200/Mo.</div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 13 – PREIS-LEISTUNG ─── -->
+  <div class="slide" id="s13">
+    <h2>Preis-Leistungs-Verhältnis</h2>
+    <div class="bars">
+      <div class="bar-row">
+        <div class="bar-label"><span>Gratis-Tier Wert</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:92%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">92%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:58%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">58%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">ChatGPT</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:75%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">75%</span></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>API Kosten-Effizienz</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:95%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">95%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:72%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">72%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">ChatGPT</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:85%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">85%</span></div>
+      </div>
+      <div class="bar-row">
+        <div class="bar-label"><span>Leistung pro $20/Mo</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--gemini)">Gemini</span><div class="bar-track" style="flex:1"><div class="bar-fill g" style="width:88%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">88%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--claude)">Claude</span><div class="bar-track" style="flex:1"><div class="bar-fill c" style="width:84%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">84%</span></div>
+        <div style="display:flex;gap:8px;align-items:center;"><span style="width:60px;font-size:.75rem;color:var(--chatgpt)">ChatGPT</span><div class="bar-track" style="flex:1"><div class="bar-fill o" style="width:86%"></div></div><span style="width:35px;font-size:.75rem;color:var(--muted);text-align:right">86%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 14 – WANN WELCHE KI ─── -->
+  <div class="slide" id="s14">
+    <h2>Wann welche KI wählen?</h2>
+    <div class="winner-grid">
+      <div class="winner-card g">
+        <div class="icon">🔵</div>
+        <div class="wname" style="color:var(--gemini)">Gemini 3 wählen wenn…</div>
+        <div class="wdesc">
+          Du Google Workspace täglich nutzt<br>
+          Du E-Mails &amp; Docs KI-gestützt willst<br>
+          Du günstiste API-Preise brauchst<br>
+          Du 1-Mio.-Token-Kontext benötigst<br>
+          Du Video (Veo 3.1) generieren willst
+        </div>
+      </div>
+      <div class="winner-card c">
+        <div class="icon">🟠</div>
+        <div class="wname" style="color:var(--claude)">Claude Opus 4.6 wählen wenn…</div>
+        <div class="wdesc">
+          Du komplexen Code schreibst &amp; reviewst<br>
+          Du tiefe Web-Recherche brauchst (84 %)<br>
+          Du Recht, Wissenschaft &amp; Bio arbeitest<br>
+          Du GUI-Automation (72.7 %) benötigst<br>
+          Du maximale Präzision willst
+        </div>
+      </div>
+      <div class="winner-card o">
+        <div class="icon">🟢</div>
+        <div class="wname" style="color:var(--chatgpt)">GPT-5.2 wählen wenn…</div>
+        <div class="wdesc">
+          Du Spitzenleistung in Mathematik willst<br>
+          Du Bilder generieren willst (DALL·E)<br>
+          Du Datenanalyse mit Python brauchst<br>
+          Du Custom GPTs aufbauen willst<br>
+          Du günstige API-Kosten (cached) willst
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────────────── SLIDE 15 – FAZIT ─── -->
+  <div class="slide" id="s15">
+    <div class="hero-bg"></div>
+    <h2>Fazit &amp; Gesamtbewertung</h2>
+    <table class="score-table" style="max-width:820px;">
+      <thead>
+        <tr><th>Kategorie</th><th style="color:var(--gemini)">Gemini 3 Pro</th><th style="color:var(--claude)">Claude Opus 4.6</th><th style="color:var(--chatgpt)">GPT-5.2</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Coding &amp; Software Engineering</td><td class="g">★★★☆</td><td class="c">★★★★<span class="tag best">Best</span></td><td class="o">★★★★</td></tr>
+        <tr><td>Mathematik &amp; Wissenschaft</td><td class="g">★★★☆</td><td class="c">★★★★</td><td class="o">★★★★<span class="tag best">Best</span></td></tr>
+        <tr><td>Produktivität &amp; Workspace</td><td class="g">★★★★<span class="tag best">Best</span></td><td class="c">★★★☆</td><td class="o">★★★☆</td></tr>
+        <tr><td>API Preis-Effizienz</td><td class="g">★★★★</td><td class="c">★★★☆</td><td class="o">★★★★<span class="tag best">Best</span></td></tr>
+        <tr><td>Kreativität &amp; Multimedia</td><td class="g">★★★★</td><td class="c">★★★☆</td><td class="o">★★★★<span class="tag best">Best</span></td></tr>
+        <tr><td>Kontextlänge</td><td class="g">★★★★<span class="tag best">Best</span></td><td class="c">★★★☆</td><td class="o">★★★☆</td></tr>
+        <tr><td>Gesamtnote</td><td class="g">★★★½</td><td class="c">★★★★</td><td class="o">★★★★</td></tr>
+      </tbody>
+    </table>
+    <div class="highlight" style="margin-top:24px;">
+      <strong>Claude &amp; GPT-5.2 teilen sich Platz 1 (Feb. 2026)</strong> — Gemini dominiert Produktivität &amp; langen Kontext. Profis kombinieren alle drei.
+    </div>
+    <div class="badges" style="margin-top:24px;">
+      <span class="badge g">Gemini = Workspace &amp; 1M-Kontext</span>
+      <span class="badge c">Claude = Code &amp; Research</span>
+      <span class="badge o">GPT-5.2 = Mathe &amp; Multimedia</span>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── DOTS ── -->
+<div id="dots"></div>
+
+<!-- ── NAV ── -->
+<div id="nav">
+  <button id="btn-prev" onclick="changeSlide(-1)" disabled>◀</button>
+  <span id="slide-counter">1 / 15</span>
+  <button id="btn-next" onclick="changeSlide(1)">▶</button>
+</div>
+
+<script>
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total  = slides.length;
+  let   cur    = 0;
+
+  /* build dots */
+  const dotsEl = document.getElementById('dots');
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dotsEl.appendChild(d);
+  });
+
+  function updateUI() {
+    document.getElementById('slide-counter').textContent = `${cur + 1} / ${total}`;
+    document.getElementById('btn-prev').disabled = cur === 0;
+    document.getElementById('btn-next').disabled = cur === total - 1;
+    document.getElementById('progress-bar').style.width = `${((cur + 1) / total) * 100}%`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+  }
+
+  function goTo(n) {
+    if (n < 0 || n >= total || n === cur) return;
+    slides[cur].classList.remove('active');
+    slides[cur].classList.add('prev');
+    setTimeout(() => slides[cur].classList.remove('prev'), 500);
+    cur = n;
+    slides[cur].classList.add('active');
+    updateUI();
+  }
+
+  function changeSlide(dir) { goTo(cur + dir); }
+
+  /* keyboard */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown'  || e.key === ' ') changeSlide(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')                       changeSlide(-1);
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End')  goTo(total - 1);
+  });
+
+  /* touch swipe */
+  let tx = 0;
+  document.addEventListener('touchstart', e => tx = e.touches[0].clientX);
+  document.addEventListener('touchend',   e => {
+    const dx = tx - e.changedTouches[0].clientX;
+    if (Math.abs(dx) > 40) changeSlide(dx > 0 ? 1 : -1);
+  });
+
+  updateUI();
+</script>
+</body>
+</html>

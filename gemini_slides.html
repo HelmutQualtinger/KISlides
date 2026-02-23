@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8">
+    <title>KI-Vergleich 2026: Gemini vs. Claude vs. ChatGPT</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/dracula.min.css">
+    <style>
+        .comparison-table { width: 100%; font-size: 0.55em; border-collapse: collapse; }
+        .comparison-table th, .comparison-table td { border: 1px solid #6272a4; padding: 8px; }
+        .highlight { color: #50fa7b; font-weight: bold; }
+        .cli-code { background: #282a36; color: #f8f8f2; padding: 5px 10px; border-radius: 4px; font-family: monospace; font-size: 0.8em; }
+        .price-tag { background: #44475a; padding: 10px; border-radius: 8px; font-size: 0.7em; flex: 1; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <section>
+                <h1>KI-Titanen 2026</h1>
+                <h3>Gemini vs. Claude vs. ChatGPT</h3>
+                <p>Coding, Productivity & CLI-Power</p>
+                <div style="font-size: 0.5em; margin-top: 50px;">Nutze die Pfeiltasten</div>
+            </section>
+
+            <section>
+                <h2>1. Disziplin: Coding</h2>
+                <ul>
+                    <li><strong>Claude 4.6:</strong> SOTA bei komplexer Logik & Architektur.</li>
+                    <li><strong>ChatGPT 5.2:</strong> Schnellster Prototyping-Partner.</li>
+                    <li><strong>Gemini 3.1:</strong> Liest ganze Repos (2M Token Kontext).</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>2. Terminal & CLI</h2>
+                <p>Der Trend 2026: Weg vom Browser, rein ins Terminal.</p>
+                <div style="display: flex; gap: 10px; font-size: 0.8em;">
+                    <div style="border: 1px solid #ff79c6; padding: 10px;"><strong>Claude Code</strong><br>Agentisches Arbeiten</div>
+                    <div style="border: 1px solid #8be9fd; padding: 10px;"><strong>Gemini CLI</strong><br>Open Source & Kontext</div>
+                    <div style="border: 1px solid #50fa7b; padding: 10px;"><strong>OpenAI Codex CLI</strong><br>Leichtgewichtiger Agent</div>
+                </div>
+            </section>
+
+            <section>
+                <h3>Claude Code: Der SOTA-Agent</h3>
+                <ul>
+                    <li><strong>Feature:</strong> Voll-autonomes Bearbeiten von Files.</li>
+                    <li>Kann Tests ausführen und Fehler selbst fixen.</li>
+                    <li><span class="cli-code">claude "Fixe den Bug in auth.ts"</span></li>
+                    <li>Unterstützt MCP (Model Context Protocol).</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Gemini CLI: Open Source Power</h3>
+                <ul>
+                    <li>Direkter Zugriff auf das 2M Kontext-Fenster.</li>
+                    <li><strong>Vorteil:</strong> Günstigste API-Anbindung (oft kostenloser Tier).</li>
+                    <li>Ideal für Datenanalyse & große Log-Files.</li>
+                    <li><span class="cli-code">gemini --include-repo . "Analysiere Security"</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>OpenAI Codex CLI</h3>
+                <ul>
+                    <li>Beste Integration in den GPT-Store.</li>
+                    <li>Fokus auf interaktive Hilfe ("Explain this").</li>
+                    <li>Gute Anbindung an GitHub-Workflows.</li>
+                    <li><span class="cli-code">chatgpt --git-diff "Schreibe Commit Message"</span></li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>CLI-Direktvergleich</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Claude Code</th>
+                            <th>Gemini CLI</th>
+                            <th>ChatGPT/Codex</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Autonomie</td><td>Hoch (Agent)</td><td>Mittel (Scripting)</td><td>Mittel (Tools)</td></tr>
+                        <tr><td>Kontext</td><td>200k - 1M</td><td>Bis 2M+</td><td>128k (standard)</td></tr>
+                        <tr><td>Preis</td><td>Pay-per-Token</td><td>Free Tier verfügbar</td><td>Abo-Integration</td></tr>
+                        <tr><td>Bester Usecase</td><td>Refactoring</td><td>Repo-Analyse</td><td>Quick-Fixes</td></tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <section>
+                <h2>3. Produktivität</h2>
+                <h3>Gemini: Workspace-Integration</h3>
+                <ul>
+                    <li>Schreibt E-Mails direkt in Gmail.</li>
+                    <li>Erstellt Google Sheets Formeln live.</li>
+                    <li>Multimodales Suchen in Google Fotos/Drive.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>Claude: Fokus & Analyse</h3>
+                <ul>
+                    <li><strong>Artifacts:</strong> Code/Docs sofort rechts visualisieren.</li>
+                    <li>Hervorragendes Verständnis für "Human Tone".</li>
+                    <li>Kein "AI-Gequassel" – kommt sofort zum Punkt.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h3>ChatGPT: Multimedia King</h3>
+                <ul>
+                    <li><strong>Sora:</strong> Video-Erstellung nativ im Chat.</li>
+                    <li><strong>Voice Mode:</strong> Nahezu latenzfreie Unterhaltung.</li>
+                    <li>DALL-E 4 für High-End Design & Logos.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>4. Workflows</h2>
+                <ul>
+                    <li><strong>Claude:</strong> Projekt-Ordner & Wissensdatenbanken.</li>
+                    <li><strong>Gemini:</strong> Cross-App-Workflows (Android/Google).</li>
+                    <li><strong>ChatGPT:</strong> Custom GPTs für spezialisierte Aufgaben.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>5. Preise 2026</h2>
+                <div style="display: flex; gap: 10px;">
+                    <div class="price-tag">
+                        <h4>Gemini Advanced</h4>
+                        <p>~19,99€ / Mo</p>
+                        <small>Inkl. 2TB Cloud & AI in Docs</small>
+                    </div>
+                    <div class="price-tag">
+                        <h4>Claude Pro</h4>
+                        <p>~18,50€ / Mo</p>
+                        <small>Hohe Limits für Opus 4.6</small>
+                    </div>
+                    <div class="price-tag">
+                        <h4>ChatGPT Plus</h4>
+                        <p>~20,00€ / Mo</p>
+                        <small>Sora, DALL-E & Voice inklusive</small>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3>High-End Optionen</h3>
+                <ul>
+                    <li><strong>ChatGPT Pro ($200):</strong> Für o1/o3 Power-User.</li>
+                    <li><strong>Claude Max ($100):</strong> Für professionelle Agent-Workflows.</li>
+                    <li><strong>Gemini Business:</strong> Günstigste Lösung für Teams.</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Wer gewinnt wo?</h2>
+                <ul>
+                    <li><span class="highlight">Coding-Profis:</span> Claude (CLI & Logik).</li>
+                    <li><span class="highlight">Google-Poweruser:</span> Gemini (Ecosystem).</li>
+                    <li><span class="highlight">Kreative:</span> ChatGPT (Video, Voice, Bild).</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>Bereit für 2026?</h2>
+                <p>Die Wahl der KI ist heute eine Wahl des Workflows.</p>
+                <hr>
+                <p><small>Präsentation erstellt von Gemini | Steuerung: Pfeiltasten</small></p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            transition: 'slide'
+        });
+    </script>
+</body>
+</html>
