@@ -2,178 +2,350 @@
 <html lang="de">
 <head>
     <meta charset="utf-8">
-    <title>KI-Vergleich 2026: Gemini vs. Claude vs. ChatGPT</title>
+    <title>AI Face-Off 2026 - Industrial Edition</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/reveal.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.5.0/theme/dracula.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
+    
     <style>
-        .comparison-table { width: 100%; font-size: 0.55em; border-collapse: collapse; }
-        .comparison-table th, .comparison-table td { border: 1px solid #6272a4; padding: 8px; }
-        .highlight { color: #50fa7b; font-weight: bold; }
-        .cli-code { background: #282a36; color: #f8f8f2; padding: 5px 10px; border-radius: 4px; font-family: monospace; font-size: 0.8em; }
-        .price-tag { background: #44475a; padding: 10px; border-radius: 8px; font-size: 0.7em; flex: 1; }
+        :root {
+            --metal-light: #e8e8e8;
+            --metal-mid: #d0d0d0;
+            --metal-dark: #a0a0a0;
+            --screw-dark: #555;
+            --text-main: #333333;
+            
+            /* Metallische Akzentfarben (Verläufe) */
+            --accent-gemini-metal: linear-gradient(135deg, #6ba3ff, #4285f4, #2a56c6);
+            --accent-claude-metal: linear-gradient(135deg, #ffab91, #d97757, #bf4b2b);
+            --accent-openai-metal: linear-gradient(135deg, #4db6ac, #10a37f, #054a49);
+        }
+
+        /* Basis-Reset und Font */
+        body { background-color: var(--metal-mid); }
+        .reveal { font-family: 'Roboto', sans-serif; color: var(--text-main); font-size: 34px; }
+        
+        /* 1. Der gebürstete Stahl-Hintergrund mit Animation */
+        .steel-bg-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2;
+            /* Simuliert gebürstetes Metall durch überlagerte Verläufe */
+            background: 
+                repeating-linear-gradient(90deg, rgba(0,0,0,0.04) 0px, rgba(0,0,0,0.04) 1px, transparent 1px, transparent 3px),
+                linear-gradient(to bottom, var(--metal-light), var(--metal-mid));
+        }
+        /* Schimmer-Effekt über dem Metall */
+        .steel-sheen {
+            position: fixed; top: 0; left: 0; width: 200%; height: 100%; z-index: -1; opacity: 0.3;
+            background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,0.8) 50%, transparent 60%);
+            animation: metalShimmer 15s infinite linear;
+        }
+
+        /* 2. Die "Nuts & Bolts" Metallplatten (Karten) */
+        .metal-plate {
+            background: linear-gradient(to bottom right, #f5f5f5, #d0d0d0);
+            border-radius: 15px;
+            padding: 40px;
+            margin: 20px;
+            position: relative;
+            /* Harte metallische Ränder und tiefe Schatten */
+            border: 3px solid #c0c0c0;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            border-right-color: #a0a0a0;
+            border-bottom-color: #808080;
+            box-shadow: 
+                inset 2px 2px 5px rgba(255,255,255,1),
+                inset -3px -3px 7px rgba(0,0,0,0.2),
+                10px 10px 25px rgba(0,0,0,0.4);
+        }
+
+        /* Die Schrauben in den Ecken */
+        .screw {
+            position: absolute; width: 25px; height: 25px;
+            background: radial-gradient(circle at center, #eee 10%, #ccc 80%, #999 100%);
+            border-radius: 50%;
+            border: 1px solid #888;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3), inset 1px 1px 2px rgba(255,255,255,0.8);
+        }
+        /* Schraubenschlitz (Kreuz) */
+        .screw::after {
+            content: '+'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(45deg);
+            font-family: monospace; font-weight: bold; color: var(--screw-dark); font-size: 18px; text-shadow: 1px 1px 1px rgba(255,255,255,0.5);
+        }
+        .screw.tl { top: 10px; left: 10px; }
+        .screw.tr { top: 10px; right: 10px; transform: rotate(25deg); } /* Leichte Variation */
+        .screw.bl { bottom: 10px; left: 10px; transform: rotate(-15deg); }
+        .screw.br { bottom: 10px; right: 10px; transform: rotate(45deg); }
+
+        /* Typografie und Layout Anpassungen */
+        .reveal h1, .reveal h2, .reveal h3 { font-weight: 900; text-transform: uppercase; letter-spacing: 2px; text-shadow: 2px 2px 4px rgba(255,255,255,0.5); color: #222; }
+        .reveal p, .reveal ul { font-weight: 400; text-shadow: 1px 1px 0px rgba(255,255,255,0.4); }
+        
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 30px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: center; }
+
+        /* Metallische Badges */
+        .badge {
+            display: inline-block; padding: 10px 25px; border-radius: 4px; /* Eckiger für Industrie-Look */
+            font-size: 0.8em; font-weight: 900; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 2px; color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 3px 3px 5px rgba(0,0,0,0.2);
+        }
+        .badge-gemini { background: var(--accent-gemini-metal); }
+        .badge-claude { background: var(--accent-claude-metal); }
+        .badge-openai { background: var(--accent-openai-metal); }
+
+        /* Terminal im Industrial Style */
+        .terminal-plate {
+            background: #222; border: 3px solid #555;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+            color: #50fa7b; font-family: 'JetBrains Mono', monospace; font-size: 0.9em; text-align: left; padding: 25px;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0; border: 3px solid #a0a0a0; }
+        th, td { padding: 15px !important; border: 1px solid #ccc; background: rgba(255,255,255,0.1); }
+        th { background: rgba(0,0,0,0.1); font-weight: 900; color: #222; }
+
+        /* Animationen */
+        @keyframes metalShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(50%); }
+        }
+        @keyframes rotateGear {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Hintergrund-Zahnräder (SVG) */
+        .gear-bg {
+            position: absolute; z-index: -1; opacity: 0.1; fill: #888;
+            animation: rotateGear 60s linear infinite;
+        }
     </style>
 </head>
 <body>
+    <div class="steel-bg-container"></div>
+    <div class="steel-sheen"></div>
+    <svg class="gear-bg" style="top: -100px; left: -100px; width: 400px;" viewBox="0 0 24 24"><path d="M12,7.5A4.5,4.5 0 0,1 16.5,12A4.5,4.5 0 0,1 12,16.5A4.5,4.5 0 0,1 7.5,12A4.5,4.5 0 0,1 12,7.5M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M20.89,13C21.31,11.29 21.11,9.5 20.35,7.93L18,9.29C18.22,10.14 18.25,11.06 18.05,11.96L20.89,13M15.54,4.69L14.18,7.05C13.32,6.83 12.4,6.8 11.53,7.05L10.17,4.69C11.9,4.23 13.78,4.23 15.54,4.69M7.93,3.65L9.29,6C8.44,5.78 7.53,5.75 6.63,5.95L3.79,4.91C4.5,3.18 5.67,1.7 7.18,0.65L8.2,2.88C9.05,2.68 9.94,2.67 10.8,2.88L11.82,0.65C13.33,1.7 14.5,3.18 15.21,4.91L12.37,5.95C11.47,5.75 10.56,5.78 9.71,6L11.07,3.65C9.96,3.34 8.89,3.34 7.93,3.65M4.91,8.79L6,11.63C5.78,12.53 5.75,13.44 5.95,14.34L3.11,17.18C2.78,16.07 2.78,15 3.11,13.96L5.95,12.82C5.75,11.92 5.78,11.01 6,10.11L4.91,7.27C4.2,8.78 3.18,10.5 2.13,12L4.36,13.03C4.16,13.92 4.15,14.81 4.36,15.71L2.13,16.73C3.18,18.24 4.91,19.41 6.63,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14Z"/></svg>
+    <svg class="gear-bg" style="bottom: -150px; right: -50px; width: 600px; animation-direction: reverse; animation-duration: 80s;" viewBox="0 0 24 24"><path d="M12,7.5A4.5,4.5 0 0,1 16.5,12A4.5,4.5 0 0,1 12,16.5A4.5,4.5 0 0,1 7.5,12A4.5,4.5 0 0,1 12,7.5M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6M20.89,13C21.31,11.29 21.11,9.5 20.35,7.93L18,9.29C18.22,10.14 18.25,11.06 18.05,11.96L20.89,13M15.54,4.69L14.18,7.05C13.32,6.83 12.4,6.8 11.53,7.05L10.17,4.69C11.9,4.23 13.78,4.23 15.54,4.69M7.93,3.65L9.29,6C8.44,5.78 7.53,5.75 6.63,5.95L3.79,4.91C4.5,3.18 5.67,1.7 7.18,0.65L8.2,2.88C9.05,2.68 9.94,2.67 10.8,2.88L11.82,0.65C13.33,1.7 14.5,3.18 15.21,4.91L12.37,5.95C11.47,5.75 10.56,5.78 9.71,6L11.07,3.65C9.96,3.34 8.89,3.34 7.93,3.65M4.91,8.79L6,11.63C5.78,12.53 5.75,13.44 5.95,14.34L3.11,17.18C2.78,16.07 2.78,15 3.11,13.96L5.95,12.82C5.75,11.92 5.78,11.01 6,10.11L4.91,7.27C4.2,8.78 3.18,10.5 2.13,12L4.36,13.03C4.16,13.92 4.15,14.81 4.36,15.71L2.13,16.73C3.18,18.24 4.91,19.41 6.63,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14C14,7.41 11.76,6.7 9.68,6.7V9.5C8.78,9.5 7.86,9.67 6.97,10.03L5.61,7.67C4.1,8.72 2.93,10.2 2.22,11.93L5.06,12.97C4.86,13.87 4.89,14.78 5.08,15.68L2.22,16.72C3.29,18.24 5.01,19.41 6.64,20.12L7.68,17.28C8.58,17.48 9.49,17.45 10.39,17.25L13.23,20.12C12.12,20.43 11.05,20.43 10.09,20.12L11.45,17.76C10.6,17.99 9.69,18.02 8.79,17.82L5.95,18.86C7.68,20.59 9.92,21.3 12,21.3V18.5C12.9,18.5 13.82,18.33 14.71,17.97L16.07,20.33C17.58,19.28 18.75,17.8 19.46,16.07L16.62,15.03C16.82,14.13 16.79,13.22 16.6,12.32L19.46,11.28C18.39,9.76 16.67,8.59 15.04,7.88L14,10.72C13.1,10.5 12.19,10.55 11.29,10.75L8.45,7.88C9.56,7.57 10.63,7.57 11.59,7.88L10.23,10.24C11.08,10 11.99,9.97 12.89,10.18L15.73,9.14Z"/></svg>
+
     <div class="reveal">
         <div class="slides">
-
+            
             <section>
-                <h1>KI-Titanen 2026</h1>
-                <h3>Gemini vs. Claude vs. ChatGPT</h3>
-                <p>Coding, Productivity & CLI-Power</p>
-                <div style="font-size: 0.5em; margin-top: 50px;">Nutze die Pfeiltasten</div>
-            </section>
-
-            <section>
-                <h2>1. Disziplin: Coding</h2>
-                <ul>
-                    <li><strong>Claude 4.6:</strong> SOTA bei komplexer Logik & Architektur.</li>
-                    <li><strong>ChatGPT 5.2:</strong> Schnellster Prototyping-Partner.</li>
-                    <li><strong>Gemini 3.1:</strong> Liest ganze Repos (2M Token Kontext).</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>2. Terminal & CLI</h2>
-                <p>Der Trend 2026: Weg vom Browser, rein ins Terminal.</p>
-                <div style="display: flex; gap: 10px; font-size: 0.8em;">
-                    <div style="border: 1px solid #ff79c6; padding: 10px;"><strong>Claude Code</strong><br>Agentisches Arbeiten</div>
-                    <div style="border: 1px solid #8be9fd; padding: 10px;"><strong>Gemini CLI</strong><br>Open Source & Kontext</div>
-                    <div style="border: 1px solid #50fa7b; padding: 10px;"><strong>OpenAI Codex CLI</strong><br>Leichtgewichtiger Agent</div>
+                <h1>The State of AI <span style="color:#555;">//</span> 2026</h1>
+                <p style="font-size: 1.5em; color: #444;">Industrial Benchmark: Gemini vs. Claude vs. ChatGPT</p>
+                <div style="margin-top: 60px; font-size: 1em; border-top: 3px solid #888; padding-top: 30px; color: #555; font-weight: bold;">
+                    HEAVY DUTY EDITION • WORKFLOW ANALYSIS
                 </div>
             </section>
 
             <section>
-                <h3>Claude Code: Der SOTA-Agent</h3>
-                <ul>
-                    <li><strong>Feature:</strong> Voll-autonomes Bearbeiten von Files.</li>
-                    <li>Kann Tests ausführen und Fehler selbst fixen.</li>
-                    <li><span class="cli-code">claude "Fixe den Bug in auth.ts"</span></li>
-                    <li>Unterstützt MCP (Model Context Protocol).</li>
-                </ul>
-            </section>
-
-            <section>
-                <h3>Gemini CLI: Open Source Power</h3>
-                <ul>
-                    <li>Direkter Zugriff auf das 2M Kontext-Fenster.</li>
-                    <li><strong>Vorteil:</strong> Günstigste API-Anbindung (oft kostenloser Tier).</li>
-                    <li>Ideal für Datenanalyse & große Log-Files.</li>
-                    <li><span class="cli-code">gemini --include-repo . "Analysiere Security"</span></li>
-                </ul>
-            </section>
-
-            <section>
-                <h3>OpenAI Codex CLI</h3>
-                <ul>
-                    <li>Beste Integration in den GPT-Store.</li>
-                    <li>Fokus auf interaktive Hilfe ("Explain this").</li>
-                    <li>Gute Anbindung an GitHub-Workflows.</li>
-                    <li><span class="cli-code">chatgpt --git-diff "Schreibe Commit Message"</span></li>
-                </ul>
-            </section>
-
-            <section>
-                <h3>CLI-Direktvergleich</h3>
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>Feature</th>
-                            <th>Claude Code</th>
-                            <th>Gemini CLI</th>
-                            <th>ChatGPT/Codex</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Autonomie</td><td>Hoch (Agent)</td><td>Mittel (Scripting)</td><td>Mittel (Tools)</td></tr>
-                        <tr><td>Kontext</td><td>200k - 1M</td><td>Bis 2M+</td><td>128k (standard)</td></tr>
-                        <tr><td>Preis</td><td>Pay-per-Token</td><td>Free Tier verfügbar</td><td>Abo-Integration</td></tr>
-                        <tr><td>Bester Usecase</td><td>Refactoring</td><td>Repo-Analyse</td><td>Quick-Fixes</td></tr>
-                    </tbody>
-                </table>
-            </section>
-
-            <section>
-                <h2>3. Produktivität</h2>
-                <h3>Gemini: Workspace-Integration</h3>
-                <ul>
-                    <li>Schreibt E-Mails direkt in Gmail.</li>
-                    <li>Erstellt Google Sheets Formeln live.</li>
-                    <li>Multimodales Suchen in Google Fotos/Drive.</li>
-                </ul>
-            </section>
-
-            <section>
-                <h3>Claude: Fokus & Analyse</h3>
-                <ul>
-                    <li><strong>Artifacts:</strong> Code/Docs sofort rechts visualisieren.</li>
-                    <li>Hervorragendes Verständnis für "Human Tone".</li>
-                    <li>Kein "AI-Gequassel" – kommt sofort zum Punkt.</li>
-                </ul>
-            </section>
-
-            <section>
-                <h3>ChatGPT: Multimedia King</h3>
-                <ul>
-                    <li><strong>Sora:</strong> Video-Erstellung nativ im Chat.</li>
-                    <li><strong>Voice Mode:</strong> Nahezu latenzfreie Unterhaltung.</li>
-                    <li>DALL-E 4 für High-End Design & Logos.</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>4. Workflows</h2>
-                <ul>
-                    <li><strong>Claude:</strong> Projekt-Ordner & Wissensdatenbanken.</li>
-                    <li><strong>Gemini:</strong> Cross-App-Workflows (Android/Google).</li>
-                    <li><strong>ChatGPT:</strong> Custom GPTs für spezialisierte Aufgaben.</li>
-                </ul>
-            </section>
-
-            <section>
-                <h2>5. Preise 2026</h2>
-                <div style="display: flex; gap: 10px;">
-                    <div class="price-tag">
-                        <h4>Gemini Advanced</h4>
-                        <p>~19,99€ / Mo</p>
-                        <small>Inkl. 2TB Cloud & AI in Docs</small>
+                <h2>Die Maschinen</h2>
+                <div class="grid-3">
+                    <div class="metal-plate fragment" data-fragment-index="1">
+                        <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                        <div class="badge badge-gemini">Google Heavy Ind.</div>
+                        <h3>Gemini</h3>
+                        <p>Der Kontext-Riese</p>
                     </div>
-                    <div class="price-tag">
-                        <h4>Claude Pro</h4>
-                        <p>~18,50€ / Mo</p>
-                        <small>Hohe Limits für Opus 4.6</small>
+                    <div class="metal-plate fragment" data-fragment-index="2">
+                        <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                        <div class="badge badge-claude">Anthropic Engineering</div>
+                        <h3>Claude</h3>
+                        <p>Die logische Instanz</p>
                     </div>
-                    <div class="price-tag">
-                        <h4>ChatGPT Plus</h4>
-                        <p>~20,00€ / Mo</p>
-                        <small>Sora, DALL-E & Voice inklusive</small>
+                    <div class="metal-plate fragment" data-fragment-index="3">
+                        <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                        <div class="badge badge-openai">OpenAI Dynamics</div>
+                        <h3>ChatGPT</h3>
+                        <p>Das Multimedia-Kraftwerk</p>
                     </div>
                 </div>
             </section>
 
             <section>
-                <h3>High-End Optionen</h3>
-                <ul>
-                    <li><strong>ChatGPT Pro ($200):</strong> Für o1/o3 Power-User.</li>
-                    <li><strong>Claude Max ($100):</strong> Für professionelle Agent-Workflows.</li>
-                    <li><strong>Gemini Business:</strong> Günstigste Lösung für Teams.</li>
-                </ul>
+                <h2>Coding 2026</h2>
+                <div class="metal-plate">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <p style="font-size: 1.5em; line-height: 1.5; font-weight: bold; color: #222;">KI ist kein Autocomplete mehr.<br>Sie ist der <span style="color: #d97757; text-shadow: 1px 1px 1px rgba(0,0,0,0.2);">Chef-Ingenieur</span>.</p>
+                </div>
             </section>
 
             <section>
-                <h2>Wer gewinnt wo?</h2>
-                <ul>
-                    <li><span class="highlight">Coding-Profis:</span> Claude (CLI & Logik).</li>
-                    <li><span class="highlight">Google-Poweruser:</span> Gemini (Ecosystem).</li>
-                    <li><span class="highlight">Kreative:</span> ChatGPT (Video, Voice, Bild).</li>
-                </ul>
+                <div class="badge badge-claude">New Machinery</div>
+                <h2>Claude Code CLI</h2>
+                <div class="grid-2">
+                    <div style="text-align: left;" class="metal-plate">
+                         <div class="screw tl"></div><div class="screw bl"></div>
+                        <ul>
+                            <li style="margin-bottom: 25px;"><strong>Autonomer Agent:</strong> Arbeitet selbstständig.</li>
+                            <li style="margin-bottom: 25px;"><strong>Vollzugriff:</strong> Baut, testet & debuggt lokal.</li>
+                            <li><strong>Deep Integration:</strong> Git & MCP Support.</li>
+                        </ul>
+                    </div>
+                    <div class="terminal-plate fragment">
+                        $ claude code "Refactor auth"<br>
+                        <span style="color: #888;">> Analyzing project structure...</span><br>
+                        <span style="color: #888;">> Running unit tests...</span><br>
+                        > [SUCCESS]: 12 files modified.
+                    </div>
+                </div>
             </section>
 
             <section>
-                <h2>Bereit für 2026?</h2>
-                <p>Die Wahl der KI ist heute eine Wahl des Workflows.</p>
-                <hr>
-                <p><small>Präsentation erstellt von Gemini | Steuerung: Pfeiltasten</small></p>
+                <div class="badge badge-gemini">Powerhouse</div>
+                <h2>Gemini 3 CLI</h2>
+                <div class="grid-2">
+                     <div class="terminal-plate">
+                        $ gemini analyze --repo .<br>
+                        <span style="color: #888;">> Spinning up context engine...</span><br>
+                        <span style="color: #888;">> Loading 2.1M tokens...</span><br>
+                        > Full repository mapping active.
+                    </div>
+                    <div style="text-align: left;" class="metal-plate">
+                         <div class="screw tr"></div><div class="screw br"></div>
+                        <ul>
+                            <li style="margin-bottom: 25px;"><strong>Unbegrenzter Kontext:</strong> Liest alles.</li>
+                            <li style="margin-bottom: 25px;"><strong>Ideal für Migrationen:</strong> Legacy Code Analyse.</li>
+                            <li><strong>Native Anbindung:</strong> GCP & Firebase.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="badge badge-openai">Standard Tooling</div>
+                <h2>ChatGPT / Codex CLI</h2>
+                <div class="metal-plate">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <ul style="text-align: left; display: inline-block; font-weight: bold;">
+                        <li style="margin-bottom: 30px;">Fokus auf <strong>Natural Language Commands</strong>.</li>
+                        <li style="margin-bottom: 30px;">Nahtlose Synchronisation mit dem <strong>Canvas Web UI</strong>.</li>
+                        <li>Bester Partner für schnelle <strong>Scripts und Regex</strong>.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h1 style="font-size: 3em; color: #222;">Produktivität</h1>
+                <div class="metal-plate" style="display: inline-block;">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <p style="font-size: 1.5em; margin: 0; font-weight: bold;">Integration schlägt Isolation.</p>
+                </div>
+            </section>
+
+            <section>
+                <div class="badge badge-gemini">Google Ecosystem</div>
+                <h2>Deep Integration</h2>
+                <div class="metal-plate">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <p style="font-size: 1.4em; margin-bottom: 40px; font-weight: 900; color: #444;">Gemini ist fest verdrahtet mit deinem Workspace.</p>
+                    <div style="font-size: 1.3em; color: #666; letter-spacing: 3px; font-weight: bold; border-top: 2px dashed #aaa; padding-top: 20px;">
+                        DRIVE • DOCS • SHEETS • MEET • GMAIL
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <div class="badge badge-claude">Workflow UI</div>
+                <h2>Claude Artifacts</h2>
+                <div class="metal-plate">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <p style="font-size: 1.4em; font-weight: bold;">Die Werkbank neben dem Chat.</p>
+                    <p>Direkte Vorschau von React-Apps, Diagrammen und interaktiven Dokumenten in Echtzeit. Kein Copy-Paste mehr nötig.</p>
+                </div>
+            </section>
+
+            <section>
+                <div class="badge badge-openai">Multimedia</div>
+                <h2>ChatGPT Multimodal</h2>
+                <div class="metal-plate">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <p style="font-size: 1.4em; font-weight: bold;">Das Kreativ-Studio.</p>
+                    <p>Dank <strong>Sora</strong> (Video) und <strong>Advanced Voice</strong> ist ChatGPT die unangefochtene Nummer 1 für Content-Creation und Hands-free Workflows.</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>Workflow Scorecard</h2>
+                <div class="metal-plate" style="padding: 30px;">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <table style="font-weight: bold;">
+                        <tr><th>Kategorie</th><th>Gemini</th><th>Claude</th><th>ChatGPT</th></tr>
+                        <tr><td>Große Repos (2M+)</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td><td>⭐⭐</td></tr>
+                        <tr><td>Agentic CLI</td><td>⭐⭐</td><td>⭐⭐⭐⭐⭐</td><td>⭐⭐⭐</td></tr>
+                        <tr><td>Content Creation</td><td>⭐⭐⭐</td><td>⭐⭐</td><td>⭐⭐⭐⭐⭐</td></tr>
+                    </table>
+                </div>
+            </section>
+
+            <section>
+                <h2>Preismodelle 2026</h2>
+                <div class="grid-3">
+                    <div class="metal-plate">
+                        <div class="screw tl"></div><div class="screw tr"></div>
+                        <h3>Gemini Adv.</h3>
+                        <div style="font-size: 2.5em; font-weight: 900; color: #4285f4; text-shadow: 1px 1px 0 #fff;">19.99€</div>
+                        <p style="font-size: 0.8em; color: #666; font-weight: bold;">Inkl. 2TB Cloud Storage</p>
+                    </div>
+                    <div class="metal-plate">
+                        <div class="screw tl"></div><div class="screw tr"></div>
+                        <h3>Claude Pro</h3>
+                        <div style="font-size: 2.5em; font-weight: 900; color: #d97757; text-shadow: 1px 1px 0 #fff;">18.50€</div>
+                        <p style="font-size: 0.8em; color: #666; font-weight: bold;">Priority Access Opus</p>
+                    </div>
+                    <div class="metal-plate">
+                        <div class="screw tl"></div><div class="screw tr"></div>
+                        <h3>ChatGPT Plus</h3>
+                        <div style="font-size: 2.5em; font-weight: 900; color: #10a37f; text-shadow: 1px 1px 0 #fff;">20.00€</div>
+                        <p style="font-size: 0.8em; color: #666; font-weight: bold;">All-in-One Multimedia</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>Professional Tiers</h2>
+                <div class="metal-plate" style="text-align: left;">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <p style="margin-bottom: 30px; font-weight: bold;">Für Power-User gibt es 2026 spezielle "Compute-Garantien":</p>
+                    <ul style="font-weight: bold;">
+                        <li style="margin-bottom: 20px; border-bottom: 2px dashed #aaa; padding-bottom: 10px;">
+                            <span style="color:#10a37f">ChatGPT Pro:</span> $200/Mo (o1/o3 Unlimitiert)
+                        </li>
+                        <li>
+                            <span style="color:#d97757">Claude Max:</span> $100/Mo (Deep Reasoning Limits)
+                        </li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>Das Fazit</h2>
+                <div class="metal-plate" style="text-align: left; padding-left: 60px;">
+                     <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                    <p style="margin-bottom: 30px; font-size: 1.2em;">
+                        <span style="color: #d97757; font-weight: 900;">▶ Claude</span> gewinnt das Terminal (CLI).
+                    </p>
+                    <p style="margin-bottom: 30px; font-size: 1.2em;">
+                        <span style="color: #4285f4; font-weight: 900;">▶ Gemini</span> gewinnt das Ökosystem.
+                    </p>
+                    <p style="font-size: 1.2em;">
+                        <span style="color: #10a37f; font-weight: 900;">▶ ChatGPT</span> gewinnt die Kreativität.
+                    </p>
+                </div>
+            </section>
+
+            <section>
+                <h1 style="font-size: 3.5em; color: #222;">Wähle dein Werkzeug.</h1>
+                <div class="metal-plate" style="display: inline-block; margin-top: 50px;">
+                    <div class="screw tl"></div><div class="screw tr"></div><div class="screw bl"></div><div class="screw br"></div>
+                     <p style="font-size: 1.2em; margin-bottom: 30px; font-weight: bold;">Die industrielle KI-Revolution hat begonnen.</p>
+                     <a href="#" style="background: linear-gradient(to bottom, #555, #333); padding: 20px 40px; border-radius: 5px; color: #fff; text-decoration: none; font-weight: 900; border: 3px solid #222; box-shadow: inset 0 0 10px rgba(0,0,0,0.5); text-transform: uppercase; letter-spacing: 2px;">
+                        Download Full Report
+                    </a>
+                </div>
             </section>
 
         </div>
@@ -184,7 +356,11 @@
         Reveal.initialize({
             hash: true,
             slideNumber: 'c/t',
-            transition: 'slide'
+            transition: 'convex', // Mechanischer wirkender Übergang
+            backgroundTransition: 'slide',
+            width: 1200,
+            height: 800,
+            margin: 0.1
         });
     </script>
 </body>
